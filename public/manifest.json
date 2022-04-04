@@ -1,0 +1,37 @@
+{
+    "name": "Hühni <3",
+    "short_name": "Hühni <3",
+    "description": "App zur Steuerung der Hühnerstall-IT",
+    "start_url": "/",
+    "background_color": "#fff",
+    "theme_color": "#fff",
+    "display": "standalone",
+    "scope": "/",
+    "orientation": "any",
+    "dir": "ltr",
+    "lang": "de-DE",
+    "icons": [
+        {
+            "src": "/images/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/images/android-chrome-maskable-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/images/android-chrome-maskable-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

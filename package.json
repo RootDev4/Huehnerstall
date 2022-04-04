@@ -1,0 +1,28 @@
+{
+  "name": "huehnerstall",
+  "version": "1.0.0",
+  "description": "App zur Steuerung der Hühnerstall-IT",
+  "main": "app.js",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.3",
+    "forever": "^4.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "scripts": {
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RootDev4/Huehnerstall.git"
+  },
+  "keywords": [],
+  "author": "Christian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RootDev4/Huehnerstall/issues"
+  },
+  "homepage": "https://github.com/RootDev4/Huehnerstall#readme"
+}
