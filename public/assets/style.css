@@ -3,14 +3,12 @@
     padding: 0;
 }
 
-ul {
-    list-style: none;
+.header-img {
+    width: 50px;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 
-.indicator::before {
-    content: '';
-}
-.indicator {
-    border: 1px solid black;
-    border-radius: 50%;
+#refresh {
+    cursor: pointer;
 }
