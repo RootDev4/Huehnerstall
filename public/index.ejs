@@ -36,20 +36,20 @@
                         <h2>Status</h2>
                         <div class="row">
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-house pe-2"></i>
-                                Hühnerklappe<span class="ps-1" id="trap">offen</span>
+                                <i class="fa-solid fa-house pe-2" id="trapIcon"></i>
+                                Hühnerklappe<span class="ps-1" id="trap"></span>
                             </div>
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-door-closed pe-2"></i>
-                                Stalltüre<span class="ps-1" id="door">geschlossen</span>
+                                <i class="fa-solid fa-door-closed pe-2" id="doorIcon"></i>
+                                Stalltüre<span class="ps-1" id="door"></span>
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="fa-solid fa-temperature-high pe-2"></i>
-                                Temperatur:<span class="ps-1" id="temperatur">23 Grad</span>
+                                Temperatur:<span class="px-1" id="temperature"></span>Grad
                             </div>
                             <div class="col-12">
                                 <i class="fa-solid fa-umbrella pe-2"></i>
-                                Luftfeuchtigkeit:<span class="ps-1" id="humidity">43%</span>
+                                Luftfeuchtigkeit:<span class="ps-1" id="humidity"></span>%
                             </div>
                         </div>
                     </div>
@@ -57,7 +57,8 @@
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2>Steuerung</h2>
-                        <button class="btn btn-sm btn-danger" id="control" data-status="open">Hühnerklappe schließen</button>
+                        <p id="trapControlInfo"></p>
+                        <button class="btn btn-sm" id="controlBtn" data-status="" disabled></button>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
