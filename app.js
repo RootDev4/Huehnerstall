@@ -21,7 +21,7 @@ app.use((error, req, res, next) => {
 })
 
 // Routes for requests
-const router = require('./src/router')(app)
+const router = require('./routes/router')(app)
 app.use('/', router)
 
 // Start server

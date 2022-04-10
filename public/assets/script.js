@@ -1,82 +1,163 @@
 'use-strict'
 
 /**
- * Data synchronization with server
+ * 
+ * @param {*} module 
+ * @param {*} args 
+ * @returns 
  */
-const sync = () => {
-    fetch('/update', { method: 'post'})
-        .then(res => res.json())
-        .then(data => {
-            console.log(data)
+const readGPIO = (module, args) => {
+    return new Promise((resolve, reject) => {
+        fetch('/gpio/read', {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ module: module, args: args })
+        })
+        .then(response => response.json())
+        .then(data => resolve(data))
+        .catch(error => reject(error))
+    })
+}
 
-            // Update status data
-            document.getElementById('trap').innerText = (data.trap === 'open') ? 'geöffnet' : 'geschlossen'
-            document.getElementById('door').innerText = (data.door === 'open') ? 'geöffnet' : 'geschlossen'
-            document.getElementById('temperature').innerText = data.temperature  || 'n/a'
-            document.getElementById('humidity').innerText = data.humidity || 'n/a'
+/**
+ * 
+ * @param {String} status 
+ * @returns {Boolean}
+ */
+const isOpen = status => (status == 'open') ? true : false
 
-            // Update trap icon
-            const trapIconClass = (data.trap === 'open') ? 'fa-house' : 'fa-house-lock'
-            document.getElementById('trapIcon').className = '' // Reset classlist
-            document.getElementById('trapIcon').classList.add('fa-solid', trapIconClass, 'pe-2')
+/**
+ * Translate status text into German
+ * @param {*} status 
+ * @returns 
+ */
+const translate = status => {
+    switch (status) {
+        case 'open':
+            return 'geöffnet'
+        case 'closed':
+            return 'geschlossen'
+        case 'n/a':
+        default:
+            return 'n/a'
+    }
+}
+
+/**
+ * 
+ * @param {*} status 
+ * @returns 
+ */
+const getTimeSchedule = status => {
+    return (status == 'open') ? '21:00' : '05:30' // TO-DO
+}
+
+/**
+ * 
+ * @returns 
+ */
+const controlHatch = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const hatch = await readGPIO('hatch-sensor', [16]) // GPIO.BCM 16
+            console.log(hatch)
+
+            resolve()
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+/**
+ * 
+ * @returns 
+ */
+const update = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // Read modules connected with GPIO
+            const door = await readGPIO('door-sensor', [26]).catch(error => { throw error }) // GPIO.BCM 26
+            const hatch = await readGPIO('hatch-sensor', [16]).catch(error => { throw error }) // GPIO.BCM 16
+            const climate = await readGPIO('climate-sensor', [4]).catch(error => { throw error }) // GPIO.BCM 4
+
+            console.log('Hatch', hatch)
+
+            // Update data
+            document.getElementById('hatch').innerText = translate(hatch.status)
+            document.getElementById('door').innerText = translate(door.status)
+            document.getElementById('temperature').innerText = climate.temperature + ' Grad' || 'n/a'
+            document.getElementById('humidity').innerText = climate.humidity + '%' || 'n/a'
+
+            // Update hatch icon
+            const hatchIconClass = (hatch.status == 'open') ? 'fa-house' : 'fa-house-lock'
+            document.getElementById('hatchIcon').className = '' // Reset classlist
+            document.getElementById('hatchIcon').classList.add('fa-solid', hatchIconClass, 'pe-2')
 
             // Update door icon
-            const doorIconClass = (data.door === 'open') ? 'fa-door-open' : 'fa-door-closed'
+            const doorIconClass = (door.status == 'open') ? 'fa-door-open' : 'fa-door-closed'
             document.getElementById('doorIcon').className = '' // Reset classlist
             document.getElementById('doorIcon').classList.add('fa-solid', doorIconClass, 'pe-2')
 
-            // Update control button
-            const controlBtnClass = (data.trap === 'open') ? 'btn-danger' : 'btn-success'
-            document.getElementById('controlBtn').innerText = (data.trap === 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-            document.getElementById('controlBtn').className = '' // Reset classlist
-            document.getElementById('controlBtn').classList.add('btn', 'btn-sm', controlBtnClass)
-            document.getElementById('controlBtn').setAttribute('data-status', data.trap)
+            // Update hatch control section
+            const controlHatchBtnClass = (hatch.status == 'open') ? 'btn-danger' : 'btn-success'
+            const text = `Die Hühnerklappe ist ${translate(hatch.status)} und ${(hatch.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(hatch.status)} Uhr automatisch.`
+            document.getElementById('controlHatchInfo').innerText = text
+            document.getElementById('controlHatchBtn').innerText = (hatch.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
+            document.getElementById('controlHatchBtn').className = '' // Reset classlist
+            document.getElementById('controlHatchBtn').classList.add('btn', 'btn-sm', controlHatchBtnClass)
+            document.getElementById('controlHatchBtn').setAttribute('data-status', hatch.status)
 
-            // Update control information
-            const text = `Die Hühnerklappe ist ${(data.trap === 'open') ? 'geöffnet' : 'geschlossen'} und ${(data.trap === 'open') ? 'schließt' : 'öffnet'} um ${(data.trap === 'open') ? data.schedule.close : data.schedule.open} Uhr automatisch.`
-            document.getElementById('trapControlInfo').innerText = text
-        })
-        .catch(error => {
-            alert('Error while data synchronization with server.')
-            console.log(error)
-        })
+            resolve()
+        } catch (error) {
+            reject(error)
+        }
+    })
 }
 
 /**
  * Main
  */
-window.onload = () => {
+window.onload = async () => {
 
-    // Update data
-    sync()
+    try {
 
-    // Reload page on click
-    document.getElementById('refresh').addEventListener('click', () => location.reload())
+        throw new Error('Foobar')
 
-    // Open/close trap manually
-    document.getElementById('controlBtn').addEventListener('click', event => {
-        fetch('/control', {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: event.target.getAttribute('data-status') })
+        // Update live data
+        await update().catch(error => { throw error })
+
+        // Reload page on click
+        document.getElementById('refresh').addEventListener('click', () => location.reload())
+
+        // Open/close hatch manually
+        document.getElementById('controlHatchBtn').addEventListener('click', async event => {
+            event.preventDefault()
+            
+            if (event.target.getAttribute('data-status') == 'open') {
+                readGPIO('hatch-controller', [21]) // GPIO.BCM 21 => close
+                .then(async data => {
+                    console.log(data)
+                    await update().catch(error => { throw error })
+                })
+                .catch(error => { throw error })
+            } else {
+                console.log(1)
+                readGPIO('hatch-controller', [20]) // GPIO.BCM 20 => open
+                .then(async data => {
+                    console.log(data)
+                    await update().catch(error => { throw error })
+                })
+                .catch(error => { throw error })
+            }
         })
-        .then(res => res.json())
-        .then(data => {
-            sync()
-            console.log(data)
-        })
-        .catch(err => console.log(err))
-    })
 
-    // Take snapshot
-    const btn1 = document.getElementById('snap')
-    if (btn1) {
-        btn1.addEventListener('click', () => {
-            fetch('/snap', { method: 'post'})
-            .then(res => res.json())
-            .then(data => console.log(data))
-            .catch(err => console.log(err))
-        })
+    } catch (error) {
+        console.log(error)
+
+        document.querySelector('#errorMsg > div > span').innerText = error.message
+        document.getElementById('errorMsg').classList.remove('d-none')
     }
+
 
 }

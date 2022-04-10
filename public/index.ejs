@@ -30,26 +30,33 @@
                     </div>
                 </div>
             </header>
+            <div class="row d-none" id="errorMsg" role="alert">
+                <div class="alert alert-danger">
+                    <b>Fehler:</b> <span></span>
+                    <i class="close-alert" style="float: right;">x</i>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
             <div class="row align-items-md-stretch">
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2>Status</h2>
                         <div class="row">
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-house pe-2" id="trapIcon"></i>
-                                Hühnerklappe<span class="ps-1" id="trap"></span>
+                                <i class="fa-solid fa-house pe-2" id="hatchIcon"></i>
+                                Hühnerklappe<span class="ps-1" id="hatch"><i class="fas fa-spinner fa-spin ms-2"></i></span>
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="fa-solid fa-door-closed pe-2" id="doorIcon"></i>
-                                Stalltüre<span class="ps-1" id="door"></span>
+                                Stalltüre<span class="ps-1" id="door"><i class="fas fa-spinner fa-spin ms-2"></i></span>
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="fa-solid fa-temperature-high pe-2"></i>
-                                Temperatur:<span class="px-1" id="temperature"></span>Grad
+                                Temperatur:<span class="px-1" id="temperature"><i class="fas fa-spinner fa-spin ms-2"></i></span>
                             </div>
                             <div class="col-12">
                                 <i class="fa-solid fa-umbrella pe-2"></i>
-                                Luftfeuchtigkeit:<span class="ps-1" id="humidity"></span>%
+                                Luftfeuchtigkeit:<span class="ps-1" id="humidity"><i class="fas fa-spinner fa-spin ms-2"></i></span>
                             </div>
                         </div>
                     </div>
@@ -57,22 +64,15 @@
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2>Steuerung</h2>
-                        <p id="trapControlInfo"></p>
-                        <button class="btn btn-sm" id="controlBtn" data-status="" disabled></button>
+                        <p id="controlHatchInfo"><i class="fas fa-spinner fa-spin"></i></p>
+                        <button class="btn btn-sm d-none" id="controlHatchBtn" data-status=""></button>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2>Webcam</h2>
                         <div>
-                            <% if (streamingAddress) { %>
-                                <div class="mb-2">
-                                    <button class="btn btn-sm btn-success" id="snap">Snapshot erstellen</button>
-                                </div>
-                                <img src="<%= streamingAddress %>">
-                            <% } else { %>
-                                Webcam nicht verfügbar.
-                            <% } %>
+                            
                         </div>
                     </div>
                 </div>

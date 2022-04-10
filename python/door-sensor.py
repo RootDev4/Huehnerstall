@@ -1,26 +1,23 @@
 import RPi.GPIO as GPIO
-import json, time, sys
+import json
+import time
+import sys
 
-# Python script to get coop door status from magnetic sensor connected to Raspberry Pi
+# Python script to get hatch status from control module connected to Raspberry Pi
 
 try:
 
-    pin = int(sys.argv[1]) # GPIO PIN
-    timeout = int(sys.argv[2]) or 2 # Time in seconds to wait between each check (default: 2)
+    pin = int(sys.argv[1])
 
-    if pin is None: raise Exception('Invalid PIN set.')
+    if pin is None or pin < 2 or pin > 27:
+        raise Exception('Invalid PIN set.')
 
     GPIO.setmode(GPIO.BCM) # GPIO.BOARD
     GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    while True:
-        if GPIO.input(pin):
-            print(json.dumps({ 'status': 'open' }))
-            time.sleep(timeout)
-        if GPIO.input(pin) == False:
-            print(json.dumps({ 'status': 'closed' }))
-            time.sleep(timeout)
+    status = 'open' if GPIO.input(pin) == True else 'closed'
+    print(json.dumps({'status': status}))
 
 except Exception as error:
-    print(json.dumps({ 'error': str(error) }))
+    print(json.dumps({'error': str(error)}))
     sys.exit(1)
