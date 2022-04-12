@@ -1,9 +1,9 @@
-import RPi.GPIO as GPIO
+from gpiozero import DigitalInputDevice
+
 import json
-import time
 import sys
 
-# Python script to get hatch status from control module connected to Raspberry Pi
+# Python script to get door status of the chicken coop.
 
 try:
 
@@ -12,12 +12,14 @@ try:
     if pin is None or pin < 2 or pin > 27:
         raise Exception('Invalid PIN set.')
 
-    GPIO.setmode(GPIO.BCM) # GPIO.BOARD
-    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    input = DigitalInputDevice(pin)
+    status = 'open' if input.value == 1 else 'closed'
+    module = sys.argv[0].replace('.py', '')
 
-    status = 'open' if GPIO.input(pin) == True else 'closed'
-    print(json.dumps({'status': status}))
+    print(json.dumps({ 'module': module, 'status': status }))
 
 except Exception as error:
-    print(json.dumps({'error': str(error)}))
+    print(json.dumps({ 'error': str(error) }))
+
+finally:
     sys.exit(1)

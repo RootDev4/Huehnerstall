@@ -1,7 +1,9 @@
-import RPi.GPIO as GPIO
-import json, sys
+from gpiozero import DigitalInputDevice
 
-# Python script to get hatch status from control module connected to Raspberry Pi
+import json
+import sys
+
+# Python script to get hatch status from control module connected to Raspberry Pi.
 
 try:
 
@@ -10,12 +12,14 @@ try:
     if pin is None or pin < 2 or pin > 27:
         raise Exception('Invalid PIN set.')
 
-    GPIO.setmode(GPIO.BCM) # GPIO.BOARD
-    GPIO.setup(pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
-    status = 'open' if GPIO.input(pin) == GPIO.HIGH else 'closed'
-    print(json.dumps({ 'status': status }))
+    input = DigitalInputDevice(pin)
+    status = 'closed' if input.value == 1 else 'open'
+    module = sys.argv[0].replace('.py', '')
+    
+    print(json.dumps({ 'module': module, 'status': status }))
 
 except Exception as error:
     print(json.dumps({ 'error': str(error) }))
+
+finally:
     sys.exit(1)

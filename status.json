@@ -1,8 +1,0 @@
-{
-  "trapControlledManually": false,
-  "trapStatus": "open",
-  "schedule": {
-    "open": "05:00",
-    "close": "21:00"
-  }
-}

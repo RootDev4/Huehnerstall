@@ -1,6 +1,7 @@
-import sys
-import json
 import Adafruit_DHT
+
+import json
+import sys
 
 # Python script to get temperature and humidity from sensor connected to Raspberry Pi
 
@@ -22,4 +23,6 @@ try:
 
 except Exception as error:
     print(json.dumps({ 'error': str(error) }))
+
+finally:
     sys.exit(1)

@@ -26,20 +26,13 @@ const moduleExists = module => {
     return fs.existsSync(`./python/${module}.py`)
 }
 
-/*
-const hatch = JSON.parse(await readGPIO('./python/hatch-sensor.py', [26]))
-const door = JSON.parse(await readGPIO('./python/door-sensor.py', [19]))
-const climateData = JSON.parse(await readGPIO('./python/climate-sensor.py', [2]))
-const scheduleData = { schedule: { open: '05:00', close: '21:00' } }
-*/
-
 router.post('/read', async (req, res) => {
     try {
         const module = req.body.module || null
         const args = req.body.args || []
         
-        if (!moduleExists(module)) throw new Error('')
-        if (Array.isArray(args) && args.length < 1) throw new Error('')
+        if (!moduleExists(module)) throw new Error(`Module ${module} does not exist.`)
+        if (Array.isArray(args) && args.length < 1) throw new Error('Invalid arguments')
 
         res.json(JSON.parse(await readGPIO(`./python/${module}.py`, args)))
     } catch (error) {
