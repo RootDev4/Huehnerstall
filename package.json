@@ -6,6 +6,7 @@
   "dependencies": {
     "ejs": "^3.1.6",
     "express": "^4.17.3",
+    "forever": "^4.0.3",
     "nconf": "^0.11.3"
   },
   "devDependencies": {
