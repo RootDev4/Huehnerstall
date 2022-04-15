@@ -1,11 +1,10 @@
-from gpiozero import DigitalInputDevice
-
-import json
-import sys
-
+#!/usr/bin/env python3
 # Python script to get door status of the chicken coop.
 
+import json, sys
+
 try:
+    from gpiozero import DigitalInputDevice
 
     pin = int(sys.argv[1])
 

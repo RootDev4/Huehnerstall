@@ -9,11 +9,12 @@
     <link rel="icon" type="image/png" sizes="96x96" href="/images/android-launchericon-96-96.png">
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="/assets/style.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
-    <script defer src="/assets/script.js"></script>
+    <script defer type="text/javascript" src="/jquery/jquery.min.js"></script>
+    <script defer type="text/javascript" src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script defer type="text/javascript" src="/assets/script.js"></script>
 </head>
 <body>
     <main>
@@ -25,16 +26,13 @@
                         <span class="fs-4">Hühnerstall IT</span>
                     </div>
                     <div class="me-0 pe-2 pb-1">
-                        <i class="fa-solid fa-rotate" id="refresh"></i>
+                        <i class="bi bi-arrow-repeat fs-5" id="refresh"></i>
                     </div>
                 </div>
             </header>
-            <div class="row d-none" id="errorMsg" role="alert">
-                <div class="alert alert-danger">
-                    <b>Fehler:</b> <span></span>
-                    <i class="close-alert" style="float: right;">x</i>
-                    <div style="clear: both;"></div>
-                </div>
+            <div id="errorMsg" class="alert alert-danger alert-dismissible fade show hidden" role="alert">
+                <b>Fehler:</b><span class="ps-1 message"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
             <div class="row align-items-md-stretch">
                 <div class="col-md-6 mb-3">
@@ -42,20 +40,32 @@
                         <h2>Status</h2>
                         <div class="row">
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-house pe-2" id="hatchIcon"></i>
-                                Hühnerklappe<span class="ps-1" id="hatch"><i class="fas fa-spinner fa-spin ms-2"></i></span>
+                                <i class="bi bi-house-door pe-2"></i>
+                                Hühnerklappe:
+                                <span class="ps-1" id="flap">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                </span>
                             </div>
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-door-closed pe-2" id="doorIcon"></i>
-                                Stalltüre<span class="ps-1" id="door"><i class="fas fa-spinner fa-spin ms-2"></i></span>
+                                <i class="bi bi-door-closed pe-2"></i>
+                                Stalltüre:
+                                <span class="ps-1" id="door">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                </span>
                             </div>
                             <div class="col-12 mb-2">
-                                <i class="fa-solid fa-temperature-high pe-2"></i>
-                                Temperatur:<span class="px-1" id="temperature"><i class="fas fa-spinner fa-spin ms-2"></i></span>
+                                <i class="bi bi-thermometer-sun pe-2"></i>
+                                Temperatur:
+                                <span class="px-1" id="temperature">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                </span>
                             </div>
                             <div class="col-12">
-                                <i class="fa-solid fa-umbrella pe-2"></i>
-                                Luftfeuchtigkeit:<span class="ps-1" id="humidity"><i class="fas fa-spinner fa-spin ms-2"></i></span>
+                                <i class="bi bi-moisture pe-2"></i>
+                                Luftfeuchtigkeit:
+                                <span class="ps-1" id="humidity">
+                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -70,20 +80,26 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
-                        <h2>Steuerung</h2>
-                        <p id="controlHatchInfo"><i class="fas fa-spinner fa-spin"></i></p>
-                        <button class="btn btn-sm d-none" id="controlHatchBtn" data-status=""></button>
-                        <div class="alert alert-warning mt-4" id="manualOperationActive" style="display: none;">
-                            <b>Achtung:</b> manueller Betrieb aktiv!
+                        <h2 class="p-0 m-0" data-bs-toggle="collapse" href="#collpase1">Steuerung</h2>
+                        <div class="collapse multi-collapse mt-2" id="collpase1">
+                            <p id="flapStatusInfo">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </p>
+                            <div>
+                                <button class="btn btn-sm btn-outline-primary" id="flapControlBtn" disabled></button>
+                                <i class="bi bi-exclamation-triangle-fill ms-2" id="flapManualModeAlert" onclick="alert('Manuelle Steuerung nötig!')"></i>
+                                <div class="alert alert-warning mt-4 text-break">
+                                    <b>Hinweis:</b> bei manuellem Betrieb der Hühnerklappe ist immer ein voll&shy;ständiger Turnus durchzuführen!
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
-                        <h2>Konfiguration</h2>
-                        <div>
-                            <textarea rows="7" class="form-control w-100" id="configData">Daten werden geladen...</textarea>
-                            <button class="btn btn-sm btn-success mt-3" id="configSave">speichern</button>
+                        <h2 class="p-0 m-0" data-bs-toggle="collapse" href="#collpase2">Konfiguration</h2>
+                        <div class="collapse multi-collapse mt-2" id="collpase2">
+                            <textarea rows="7" class="form-control w-100" id="configData" readonly>Daten werden geladen...</textarea>
                         </div>
                     </div>
                 </div>

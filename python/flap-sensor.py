@@ -1,11 +1,10 @@
-from gpiozero import DigitalInputDevice
+#!/usr/bin/env python3
+# Python script to get flap status from control module connected to Raspberry Pi.
 
-import json
-import sys
-
-# Python script to get hatch status from control module connected to Raspberry Pi.
+import json, sys
 
 try:
+    from gpiozero import DigitalInputDevice
 
     pin = int(sys.argv[1])
 

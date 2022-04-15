@@ -3,10 +3,10 @@ const { spawn } = require('child_process')
 const fs = require('fs')
 
 /**
- * 
- * @param {String} path 
- * @param {Array} args 
- * @returns 
+ * Request GPIO via python
+ * @param {String} path Path of python script
+ * @param {Array} args Optional arguments
+ * @returns {String} Result
  */
 const readGPIO = (path, args = []) => {
     return new Promise((resolve, reject) => {
@@ -18,14 +18,17 @@ const readGPIO = (path, args = []) => {
 }
 
 /**
- * 
- * @param {*} module 
- * @returns 
+ * Checks if a python module exists by name
+ * @param {Sring} module Name of python module 
+ * @returns {Boolean} True/False
  */
 const moduleExists = module => {
     return fs.existsSync(`./python/${module}.py`)
 }
 
+/**
+ * Route for requesting GPIO module via python
+ */
 router.post('/read', async (req, res) => {
     try {
         const module = req.body.module || null
@@ -34,10 +37,11 @@ router.post('/read', async (req, res) => {
         if (!moduleExists(module)) throw new Error(`Module ${module} does not exist.`)
         if (Array.isArray(args) && args.length < 1) throw new Error('Invalid arguments')
 
-        res.json(JSON.parse(await readGPIO(`./python/${module}.py`, args)))
+        const result = await readGPIO(`./python/${module}.py`, args)
+
+        res.json(JSON.parse(result))
     } catch (error) {
-        console.log(error)
-        res.json({ error: error.message })
+        res.json({ error: error })
     }
 })
 

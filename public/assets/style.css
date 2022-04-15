@@ -3,6 +3,14 @@
     padding: 0;
 }
 
+body {
+    hyphens: auto;
+}
+
+.hidden {
+    display: none;
+}
+
 .header-img {
     width: 50px;
     -webkit-transform: scaleX(-1);

@@ -1,10 +1,10 @@
 'use-strict'
 
 /**
- * 
- * @param {*} module 
- * @param {*} args 
- * @returns 
+ * Request python scripts to read/write GPIO pins
+ * @param {String} module Name of requested module 
+ * @param {Array} args Array with optional arguments 
+ * @returns {Promise} JSON object with result data
  */
 const readGPIO = (module, args) => {
     return new Promise((resolve, reject) => {
@@ -13,19 +13,19 @@ const readGPIO = (module, args) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ module: module, args: args })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw data.error
-            resolve(data)
-        })
-        .catch(error => reject(error))
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw data.error
+                resolve(data)
+            })
+            .catch(error => reject(error))
     })
 }
 
 /**
  * Translate status text into German
- * @param {*} status 
- * @returns 
+ * @param {String} status open/close
+ * @returns {string} German translation
  */
 const translate = status => {
     switch (status) {
@@ -40,107 +40,77 @@ const translate = status => {
 }
 
 /**
- * 
- * @param {*} config 
- * @returns 
+ * Get time plan from config object
+ * @param {Object} config JSON config object
+ * @returns {String} open/close time plan
  */
 const getTimeSchedule = config => {
-    const status = config.hatchStatus
+    const flapCurrentStatus = localStorage.getItem('flapCurrentStatus')
     const currentWeekday = new Date().toLocaleString('de', { weekday: 'short' })
 
     // Check if current weekday is at weekend
     if (['Sa', 'So'].includes(currentWeekday)) {
-        return (status == 'open') ? config.schedule.weekend.close : config.schedule.weekend.open
+        return (flapCurrentStatus == 'open') ? config.schedule.weekend.close : config.schedule.weekend.open
     }
 
-    return (status == 'open') ? config.schedule.week.close : config.schedule.week.open
+    return (flapCurrentStatus == 'open') ? config.schedule.week.close : config.schedule.week.open
 }
 
 /**
- * 
- * @returns 
+ * Get data from config file
+ * @returns {Promise} JSON object with result data
  */
 const getConfig = () => {
     return new Promise(async (resolve, reject) => {
         fetch('/get-config')
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw data.error
-            resolve(data)
-        })
-        .catch(error => reject(error))
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error)
+                resolve(data)
+            })
+            .catch(error => reject(error))
     })
 }
 
 /**
- * 
- * @param {*} data 
- * @returns 
- */
-const setConfig = data => {
-    return new Promise(async (resolve, reject) => {
-        fetch('/set-config', {
-            method: 'post',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw data.error
-            resolve(data)
-        })
-        .catch(error => reject(error))
-    })
-}
-
-/**
- * 
- * @param {*} config 
- * @returns 
+ * Synchronizing with controller module and sensors and update HTML
+ * @param {Object} config JSON config object 
+ * @returns {Promise} JSON object with result data
  */
 const synchronize = config => {
     return new Promise(async (resolve, reject) => {
         try {
             // Read modules connected with GPIO
-            const door = await readGPIO('door-sensor', [config.gpio.status.door]).catch(error => { throw error })
-            const hatch = await readGPIO('hatch-sensor', [config.gpio.status.hatch]).catch(error => { throw error })
-            const climate = await readGPIO('climate-sensor', [config.gpio.climate]).catch(error => { throw error })
+            const door = await readGPIO('door-sensor', [config.gpio.status.door])
+            const flap = await readGPIO('flap-sensor', [config.gpio.status.flap])
+            const climate = await readGPIO('climate-sensor', [config.gpio.climate])
+
+            // Catch errors from python scripts
+            [door, flap, climate].forEach(data => {
+                if (data.error) throw new Error(data.error)
+            })
+
+            // Initialize local storage if values not set
+            if (!['true', 'false'].includes(localStorage.getItem('flapManualMode'))) localStorage.setItem('flapManualMode', 'false')
+            if (!['open', 'closed'].includes(localStorage.getItem('flapCurrentStatus'))) localStorage.setItem('flapCurrentStatus', flap.status)
 
             // Update data
-            document.getElementById('hatch').innerText = translate(hatch.status)
+            document.getElementById('flap').innerText = translate(flap.status)
             document.getElementById('door').innerText = translate(door.status)
             document.getElementById('temperature').innerText = climate.temperature + ' Grad' || 'n/a'
             document.getElementById('humidity').innerText = climate.humidity + '%' || 'n/a'
 
-            // Update hatch icon
-            const hatchIconClass = (hatch.status == 'open') ? 'fa-house' : 'fa-house-lock'
-            document.getElementById('hatchIcon').className = '' // Reset classlist
-            document.getElementById('hatchIcon').classList.add('fa-solid', hatchIconClass, 'pe-2')
+            // Update flap control section
+            const text = `Die Hühnerklappe ist ${translate(flap.status)} und ${(flap.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(config)} Uhr automatisch.`
+            document.getElementById('flapStatusInfo').innerText = text
+            document.getElementById('flapControlBtn').innerText = (flap.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
+            document.getElementById('flapControlBtn').disabled = false
 
-            // Update door icon
-            const doorIconClass = (door.status == 'open') ? 'fa-door-open' : 'fa-door-closed'
-            document.getElementById('doorIcon').className = '' // Reset classlist
-            document.getElementById('doorIcon').classList.add('fa-solid', doorIconClass, 'pe-2')
+            // Show warning icon if flap was manually controlled because controller module requires full pass
+            document.getElementById('flapManualModeAlert').style.display = (localStorage.getItem('flapManualMode') == 'true') ? 'block' : 'none'
 
-            // Update hatch control section
-            const controlHatchBtnClass = (hatch.status == 'open') ? 'btn-danger' : 'btn-success'
-            const text = `Die Hühnerklappe ist ${translate(hatch.status)} und ${(hatch.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(config)} Uhr automatisch.`
-            document.getElementById('controlHatchInfo').innerText = text
-            document.getElementById('controlHatchBtn').innerText = (hatch.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-            document.getElementById('controlHatchBtn').className = '' // Reset classlist
-            document.getElementById('controlHatchBtn').classList.add('btn', 'btn-sm', controlHatchBtnClass)
-            document.getElementById('controlHatchBtn').setAttribute('data-status', hatch.status)
-            document.getElementById('controlHatchBtn').disabled = false
-            document.getElementById('manualOperationActive').style.display = (hatch.manually) ? 'block' : 'none'
-
-            // If the hatch is currently travelling, update the control button
-            console.log(config.hatchTravelling)
-            if (config.hatchTravelling) {
-                document.getElementById('controlHatchBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bitte warten ...'
-                document.getElementById('controlHatchBtn').disabled = true
-            }
-
-            resolve({ door: door.status, hatch: hatch.status, climate: climate })
+            // Return data
+            resolve({ door: door.status, flap: flap.status, climate: climate })
         } catch (error) {
             reject(error)
         }
@@ -159,64 +129,51 @@ window.onload = async () => {
         document.getElementById('configData').value = JSON.stringify(config)
 
         // Synchronizing with controller module and sensors
-        const syncResult = await synchronize(config).catch(error => { throw error })
+        const syncResult = await synchronize(config)
 
         // Reload page on click
         document.getElementById('refresh').addEventListener('click', () => location.reload())
 
-        // Save config
-        document.getElementById('configSave').addEventListener('click', async event => {
-            event.preventDefault()
-
-            const data = document.getElementById('configData').value
-            
-            if (data.length) {
-                if (confirm('Dies überschreibt die aktuelle Konfiguration. Fortfahren?')) {
-                    setConfig(JSON.parse(data)).then(() => location.reload()).catch(error => { throw error })
-                }
-            } else {
-                alert('Das Konfigurationsdatenobjekt darf nicht leer sein.')
-            }
-        })
-
-        // Open/close hatch manually
-        document.getElementById('controlHatchBtn').addEventListener('click', async event => {
+        // Open/close flap manually
+        document.getElementById('flapControlBtn').addEventListener('click', async event => {
             event.preventDefault()
 
             event.target.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bitte warten ...'
             event.target.disabled = true
 
-            // Update config
-            //await setConfig({ hatchTravelling: true })
+            const flapManualMode = localStorage.getItem('flapManualMode') || null
+            const flapCurrentStatus = localStorage.getItem('flapCurrentStatus') || null
+            const setGpioPin = (flapCurrentStatus == 'open') ? config.gpio.control.close : config.gpio.control.open
 
-            // Open/close the hatch
-            if (config.hatchStatus == 'open') {
-                readGPIO('hatch-controller', [config.gpio.control.close]) // Close hatch
-                    .then(async data => {
-                        if (!data.ok) throw new Error('Closing hatch failed due to an unknown error.')
+            // Throw error if current status of the flap is not stored locally
+            if (!['open', 'closed'].includes(flapCurrentStatus)) throw new Error('Der aktuelle Status der Hühnerklappe wurde nicht gespeichert. Reset nötig!')
 
-                        //await setConfig({ hatchTravelling: false, hatchStatus: 'closed' })
-                        setTimeout(() => { location.reload() }, 50 * 1000) // 50 seconds
-                    })
-                    .catch(error => { throw error })
-            } else {
-                readGPIO('hatch-controller', [config.gpio.control.open]) // Open hatch
-                    .then(data => {
-                        if (!data.ok) throw new Error('Opening hatch failed due to an unknown error.')
+            // Open/close the flap
+            readGPIO('flap-controller', [setGpioPin])
+                .then(data => {
+                    if (!data.ok) throw new Error(`Die Steuerung der Hühnerklappe schlug aufgrund eines unbekannten Fehlers fehl (akt. Status: ${flapCurrentStatus}).`)
 
-                        //await setConfig({ hatchTravelling: false, hatchStatus: 'open' })
-                        setTimeout(() => { location.reload() }, 60 * 1000) // 60 seconds
-                    })
-                    .catch(error => { throw error })
-            }
+                    const checkFlapStatus = setInterval(async () => {
+                        const newFlapStatus = await readGPIO('flap-sensor', [config.gpio.status.flap])
+
+                        if (newFlapStatus !== flapCurrentStatus) {
+                            clearInterval(checkFlapStatus)
+
+                            localStorage.setItem('flapManualMode', (flapManualMode == 'false') ? 'true' : 'false')
+                            location.reload()
+                        }
+                    }, 5 * 1000) // check every 5 seconds
+                })
+                .catch(error => { throw new Error(error) })
+            
         })
 
     } catch (error) {
         console.log(error)
 
-        document.querySelector('#errorMsg > div > span').innerText = error.message
-        document.getElementById('errorMsg').classList.remove('d-none')
+        // Show error
+        $('#errorMsg').find('.message').html(error)
+        $('#errorMsg').slideDown('slow')
     }
-
 
 }

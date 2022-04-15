@@ -8,6 +8,11 @@ const port = 8080
 app.set('views', path.join(__dirname, 'public'))
 app.set('view engine', 'ejs')
 
+// Serve assets
+app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
+app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')))
+app.use('/bootstrap-icons', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')))
+
 // Configure express
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))

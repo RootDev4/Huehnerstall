@@ -1,12 +1,10 @@
-from gpiozero import DigitalOutputDevice
+#!/usr/bin/env python3
+#  Python script to open/close the flap over control module connected to Raspberry Pi.
 
-import time
-import json
-import sys
-
-#  Python script to open/close the hatch over control module connected to Raspberry Pi.
+import time, json, sys
 
 try:
+    from gpiozero import DigitalOutputDevice
 
     pin = int(sys.argv[1])
 

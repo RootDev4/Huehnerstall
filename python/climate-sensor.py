@@ -1,11 +1,10 @@
-import Adafruit_DHT
-
-import json
-import sys
-
+#!/usr/bin/env python3
 # Python script to get temperature and humidity from sensor connected to Raspberry Pi
 
+import json, sys
+
 try:
+    import Adafruit_DHT
 
     sensor = Adafruit_DHT.DHT22
     pin = int(sys.argv[1])
