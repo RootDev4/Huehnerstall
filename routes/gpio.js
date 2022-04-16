@@ -37,9 +37,9 @@ router.post('/read', async (req, res) => {
         if (!moduleExists(module)) throw new Error(`Module ${module} does not exist.`)
         if (Array.isArray(args) && args.length < 1) throw new Error('Invalid arguments')
 
-        const result = await readGPIO(`./python/${module}.py`, args)
+        //const result = await readGPIO(`./python/${module}.py`, args)
 
-        res.json(JSON.parse(result))
+        res.json(JSON.parse(await readGPIO(`./python/${module}.py`, args)))
     } catch (error) {
         res.json({ error: error })
     }

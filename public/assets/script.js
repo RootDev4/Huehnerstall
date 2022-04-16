@@ -86,9 +86,9 @@ const synchronize = config => {
             const climate = await readGPIO('climate-sensor', [config.gpio.climate])
 
             // Catch errors from python scripts
-            [door, flap, climate].forEach(data => {
-                if (data.error) throw new Error(data.error)
-            })
+            if (door.error) throw new Error(door.error)
+            if (flap.error) throw new Error(flap.error)
+            if (climate.error) throw new Error(climate.error)
 
             // Initialize local storage if values not set
             if (!['true', 'false'].includes(localStorage.getItem('flapManualMode'))) localStorage.setItem('flapManualMode', 'false')
