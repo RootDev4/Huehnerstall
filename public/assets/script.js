@@ -44,16 +44,16 @@ const translate = status => {
  * @param {Object} config JSON config object
  * @returns {String} open/close time plan
  */
-const getTimeSchedule = config => {
-    const flapCurrentStatus = localStorage.getItem('flapCurrentStatus')
+const getTimeSchedule = (config, status) => {
+    //const flapCurrentStatus = localStorage.getItem('flapCurrentStatus')
     const currentWeekday = new Date().toLocaleString('de', { weekday: 'short' })
 
     // Check if current weekday is at weekend
     if (['Sa', 'So'].includes(currentWeekday)) {
-        return (flapCurrentStatus == 'open') ? config.schedule.weekend.close : config.schedule.weekend.open
+        return (status == 'open') ? config.schedule.weekend.close : config.schedule.weekend.open
     }
 
-    return (flapCurrentStatus == 'open') ? config.schedule.week.close : config.schedule.week.open
+    return (status == 'open') ? config.schedule.week.close : config.schedule.week.open
 }
 
 /**
@@ -85,6 +85,8 @@ const synchronize = config => {
             const flap = await readGPIO('flap-sensor', [config.gpio.status.flap])
             const climate = await readGPIO('climate-sensor', [config.gpio.climate])
 
+            console.log(flap)
+
             // Catch errors from python scripts
             if (door.error) throw new Error(door.error)
             if (flap.error) throw new Error(flap.error)
@@ -101,10 +103,10 @@ const synchronize = config => {
             document.getElementById('humidity').innerText = climate.humidity + '%' || 'n/a'
 
             // Update flap control section
-            const text = `Die Hühnerklappe ist ${translate(flap.status)} und ${(flap.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(config)} Uhr automatisch.`
+            const text = `Die Hühnerklappe ist ${translate(flap.status)} und ${(flap.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(config, flap.status)} Uhr automatisch.`
             document.getElementById('flapStatusInfo').innerText = text
             document.getElementById('flapControlBtn').innerText = (flap.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-            document.getElementById('flapControlBtn').disabled = false
+            document.getElementById('flapControlBtn').style.display = 'inline-block'
 
             // Show warning icon if flap was manually controlled because controller module requires full pass
             document.getElementById('flapManualModeAlert').style.display = (localStorage.getItem('flapManualMode') == 'true') ? 'block' : 'none'
@@ -126,13 +128,30 @@ window.onload = async () => {
 
         // Get config data
         const config = await getConfig()
-        document.getElementById('configData').value = JSON.stringify(config)
+        //document.getElementById('configData').value = JSON.stringify(config)
 
         // Synchronizing with controller module and sensors
         const syncResult = await synchronize(config)
 
         // Reload page on click
         document.getElementById('refresh').addEventListener('click', () => location.reload())
+
+        fetch('/stream')
+            .then(response => response.json())
+            .then(data => {
+                //if (data.error) throw new Error(error)
+
+                console.log('Live Stream', data)
+
+                const webcam = document.getElementById('webcam')
+                const stream = document.createElement('img')
+                stream.src = 'http://192.168.178.44:9090/stream.mjpg'
+                webcam.innerHTML = '' // Clear HTML
+                webcam.appendChild(stream)
+            })
+            .catch(error => {
+                $('#webcam').html('').next('div.alert').html(error).slideDown('slow')
+            })
 
         // Open/close flap manually
         document.getElementById('flapControlBtn').addEventListener('click', async event => {
@@ -177,3 +196,9 @@ window.onload = async () => {
     }
 
 }
+
+window.addEventListener('beforeunload', event => {
+    event.preventDefault()
+    e.returnValue = ''
+    confirm('Close?')
+})

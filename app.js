@@ -17,6 +17,7 @@ app.use('/bootstrap-icons', express.static(path.join(__dirname, 'node_modules/bo
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'snapshots')))
 
 // Handle errors
 app.use((error, req, res, next) => {

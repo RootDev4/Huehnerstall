@@ -74,27 +74,29 @@
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2>Webcam</h2>
                         <div id="webcam">
-                            Webcam nicht verfügbar.
+                            <div class="spinner-border spinner-border-sm" role="status"></div>
                         </div>
+                        <div class="alert alert-danger hidden"></div>
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
-                        <h2 class="p-0 m-0" data-bs-toggle="collapse" href="#collpase1">Steuerung</h2>
-                        <div class="collapse multi-collapse mt-2" id="collpase1">
+                        <h2>Steuerung</h2>
+                        <div class="mt-2">
                             <p id="flapStatusInfo">
                                 <span class="spinner-border spinner-border-sm" role="status"></span>
                             </p>
                             <div>
-                                <button class="btn btn-sm btn-outline-primary" id="flapControlBtn" disabled></button>
-                                <i class="bi bi-exclamation-triangle-fill ms-2" id="flapManualModeAlert" onclick="alert('Manuelle Steuerung nötig!')"></i>
-                                <div class="alert alert-warning mt-4 text-break">
+                                <button class="btn btn-sm btn-outline-primary hidden" id="flapControlBtn"></button>
+                                <i class="bi bi-exclamation-triangle-fill ms-2 hidden" id="flapManualModeAlert" onclick="alert('Manuelle Steuerung nötig!')"></i>
+                                <div class="alert alert-warning mt-4 text-break hidden">
                                     <b>Hinweis:</b> bei manuellem Betrieb der Hühnerklappe ist immer ein voll&shy;ständiger Turnus durchzuführen!
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <!--
                 <div class="col-md-6 mb-3">
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <h2 class="p-0 m-0" data-bs-toggle="collapse" href="#collpase2">Konfiguration</h2>
@@ -103,6 +105,7 @@
                         </div>
                     </div>
                 </div>
+                -->
             </div>
         </div>
     </main>
