@@ -5,7 +5,7 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 :pushpin: See englisch version of this README [here](./README-en.md).
 
 ## Technik
-- Hühnerklappe HK2.0-RE von JOSTechnik
+- [Hühner-/Entenklappe HK2.0-RE von JOSTechnik](https://jost-technik.de/HK20-RE-Rahmengeraet-mit-selbstverriegelnder-Entenklappe-inkl-Steuerung-fuer-Anlocklicht-und-Beleuchtung--500_110.html)
 - Raspberry Pi 3 Modell
 - [Raspberry Pi 5MP Kamera-Modul](https://www.berrybase.de/raspberry-pi/raspberry-pi-computer/kameras/5mp-kamera-f-252-r-raspberry-pi)
 - [Optokoppler Isolation Modul, PC817 EL817 12V 80 KHz 1-Kanal](https://www.amazon.de/Optokoppler-Isolation-Modul-1-Kanal-Platine-DIN-Schienenhalterung-SPS-Prozessoren/dp/B07YHQBCZ7/)
@@ -15,7 +15,9 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 - Jumperkabel und diverse Widerstände (1k bis 10k Ohm)
 
 ## Schaltung
+Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnittstellen kontrolliert. Über das Relais lässt sich die Hühnerklappe über die App öffnen und schließen.
 
+<img src="https://user-images.githubusercontent.com/61932664/164439927-c29ef9ee-406c-4363-8c64-9a849b151e25.jpeg" style="width: 250px;">
 
 ## Eindrücke
 <div style="display: flex; justify-content: center;">
