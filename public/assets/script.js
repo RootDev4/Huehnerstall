@@ -85,8 +85,6 @@ const synchronize = config => {
             const flap = await readGPIO('flap-sensor', [config.gpio.status.flap])
             const climate = await readGPIO('climate-sensor', [config.gpio.climate])
 
-            console.log(flap)
-
             // Catch errors from python scripts
             if (door.error) throw new Error(door.error)
             if (flap.error) throw new Error(flap.error)
@@ -136,13 +134,9 @@ window.onload = async () => {
         // Reload page on click
         document.getElementById('refresh').addEventListener('click', () => location.reload())
 
-        fetch('/stream')
-            .then(response => response.json())
-            .then(data => {
-                //if (data.error) throw new Error(error)
-
-                console.log('Live Stream', data)
-
+        // Check if webcam server is available and start stream if so
+        fetch('http://192.168.178.44:9090/', { mode: 'no-cors' })
+            .then(() => {
                 const webcam = document.getElementById('webcam')
                 const stream = document.createElement('img')
                 stream.src = 'http://192.168.178.44:9090/stream.mjpg'
@@ -150,7 +144,8 @@ window.onload = async () => {
                 webcam.appendChild(stream)
             })
             .catch(error => {
-                $('#webcam').html('').next('div.alert').html(error).slideDown('slow')
+                if (error.message.includes('Failed to fetch')) error.message = 'Der Webcam-Server ist nicht erreichbar.'
+                $('#webcam').html('').next('div.alert').html(error.message).slideDown('slow')
             })
 
         // Open/close flap manually
