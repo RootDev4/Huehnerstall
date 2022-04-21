@@ -6,6 +6,6 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 
 !Work in Progress!
 
-![Hühnerklappe](https://ibb.co/sW2GJPd)
-![Raspberry PI Steuerung](https://ibb.co/1zrGvp1)
-![In Aktion](https://ibb.co/zZ1YMqm)
+![Hühnerklappe](https://i.ibb.co/xFD08st/IMG-2377.jpg)
+![Raspberry PI Steuerung](https://i.ibb.co/Sftws1b/IMG-2441.jpg)
+![In Aktion](https://i.ibb.co/1T35gF0/IMG-2447.jpg)
