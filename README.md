@@ -6,7 +6,7 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 
 ## Technik
 - [Hühner-/Entenklappe HK2.0-RE von JOSTechnik](https://jost-technik.de/HK20-RE-Rahmengeraet-mit-selbstverriegelnder-Entenklappe-inkl-Steuerung-fuer-Anlocklicht-und-Beleuchtung--500_110.html)
-- Raspberry Pi 3 Modell
+- Raspberry Pi 3 Model B V1.2
 - [Raspberry Pi 5MP Kamera-Modul](https://www.berrybase.de/raspberry-pi/raspberry-pi-computer/kameras/5mp-kamera-f-252-r-raspberry-pi)
 - [Optokoppler Isolation Modul, PC817 EL817 12V 80 KHz 1-Kanal](https://www.amazon.de/Optokoppler-Isolation-Modul-1-Kanal-Platine-DIN-Schienenhalterung-SPS-Prozessoren/dp/B07YHQBCZ7/)
 - [5V 2-Kanal Relais Modul](https://www.berrybase.de/sensoren-module/relaiskarten/5v-2-kanal-relais-modul)
@@ -15,7 +15,7 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 - Jumperkabel und diverse Widerstände (1k bis 10k Ohm)
 
 ## Schaltung
-Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnittstellen kontrolliert. Über das Relais lässt sich die Hühnerklappe über die App öffnen und schließen.
+Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnittstellen kontrolliert. Über das Relais lässt sich die Hühnerklappe in der App öffnen und schließen.
 
 <img src="https://user-images.githubusercontent.com/61932664/164439927-c29ef9ee-406c-4363-8c64-9a849b151e25.jpeg" style="width: 250px;">
 
@@ -28,3 +28,10 @@ Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnitt
 
 ## PWA Screenshot
 <img src="https://user-images.githubusercontent.com/61932664/164433614-9bc2031c-7819-4a96-af65-c3dee4ce58f0.JPG" style="width: 250px;">
+
+## To-Do
+- [x] Hardware (Technik)
+- [x] Software (App)
+- [ ] Fehlererkennung und Verzögerungstoleranzen
+- [ ] manuellen Betrieb steuern und Automatik anpassen
+- [ ] Webcam-Stream via raspivid (derzeit: Python3 picamera)
