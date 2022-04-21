@@ -2,7 +2,17 @@
 
 Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten Hühnerstalls.
 
-:pushpin: See englisch version of this README [here](./README-en.md).
+:pushpin: See englisch version of this README [here](./README-en.md). (WiP/To-Do)
+
+Die App läuft auf einem Raspberry Pi 3 als NodeJS-Applikation. GPIO-Schnittstellen werden über Python3-Scripte gesteuert, da die verfügbaren NodeJS-Pakete (npm) diesbezüglich weniger flexibel und zuverlässig sind.
+
+## Features
+- Automatisierte Steuerung der Hühnerklappe (Zeitschaltung, Lichtsensor, Nothalt, Verriegelung) -> JOSTechnik; keine Eigenentwicklung!
+- Steuerung der Hühnerstall-IT über eine App (lokales Netzwerk oder aus der Ferne via VPN)
+- Öffnen/Schließen der Hühnerklappe / Erkennen des Klappenstatus (offen/geschlossen)
+- Messen von Temperatur und Luftfeuchtigkeit im Stall
+- Erkennen des Status der Stalltüre (offen/geschlossen)
+- Live Stream per Kamera-Modul
 
 ## Technik
 - [Hühner-/Entenklappe HK2.0-RE von JOSTechnik](https://jost-technik.de/HK20-RE-Rahmengeraet-mit-selbstverriegelnder-Entenklappe-inkl-Steuerung-fuer-Anlocklicht-und-Beleuchtung--500_110.html)
