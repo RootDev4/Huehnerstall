@@ -7,7 +7,7 @@ Progressive Web App (PWA) zur Verwaltung und Steuerung meines automatisierten H�
 Die App läuft auf einem Raspberry Pi 3 als NodeJS-Applikation. GPIO-Schnittstellen werden über Python3-Scripte gesteuert, da die verfügbaren NodeJS-Pakete (npm) diesbezüglich weniger flexibel und zuverlässig sind.
 
 ## Features
-- Automatisierte Steuerung der Hühnerklappe (Zeitschaltung, Lichtsensor, Nothalt, Verriegelung) -> JOSTechnik; keine Eigenentwicklung!
+- Automatisierte Steuerung der Hühnerklappe (Zeitschaltung, Lichtsensor, Nothalt, Verriegelung) -> JOSTechnik
 - Steuerung der Hühnerstall-IT über eine App (lokales Netzwerk oder aus der Ferne via VPN)
 - Öffnen/Schließen der Hühnerklappe / Erkennen des Klappenstatus (offen/geschlossen)
 - Messen von Temperatur und Luftfeuchtigkeit im Stall
@@ -28,6 +28,77 @@ Die App läuft auf einem Raspberry Pi 3 als NodeJS-Applikation. GPIO-Schnittstel
 Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnittstellen kontrolliert. Über das Relais lässt sich die Hühnerklappe in der App öffnen und schließen.
 
 <img src="https://user-images.githubusercontent.com/61932664/164439927-c29ef9ee-406c-4363-8c64-9a849b151e25.jpeg" style="width: 250px;">
+
+## Anbindung
+JosTechnik bietet unterschiedliche Zusatzmodule an, welche an die Steuereinheit angeschlossen werden können. Diese habe ich softwareseitig mit Pythonscripts ersetzt.
+
+### Externer Taster
+Ein externer, kabelgebundener Taster kann angeschlossen werden, um die Hühnerklappe auch aus der Ferne öffnen und schließen zu können. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
+
+```python
+#!/usr/bin/env python3
+#  Python script to open/close the flap over control module connected to Raspberry Pi.
+
+import time, json, sys
+
+try:
+    from gpiozero import DigitalOutputDevice
+
+    pin = int(sys.argv[1])
+
+    if pin is None or pin < 2 or pin > 27:
+        raise Exception('Invalid PIN set.')
+    
+    relais = DigitalOutputDevice(pin)
+    module = sys.argv[0].replace('.py', '')
+    
+    time.sleep(1)
+    relais.on()
+    time.sleep(2)
+    relais.off()
+
+    print(json.dumps({ 'module': module, 'ok': True }))
+
+except Exception as error:
+    print(json.dumps({ 'error': str(error) }))
+
+finally:
+    sys.exit(1)
+```
+
+Über den jeweiligen GPIO-Pin bekommt das Steuermodul das Signal, die Klappe zu öffnen oder zu schließen.
+
+### Klappenstatus
+Eine externe, kabelgebundene Fernanzeige kann angeschlossen werden, um den Status der Klappe über eine rote LED (offen) oder grüne LED (geschlossen) anzuzeigen. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
+
+```python
+#!/usr/bin/env python3
+# Python script to get flap status from control module connected to Raspberry Pi.
+
+import json, sys
+
+try:
+    from gpiozero import DigitalInputDevice
+
+    pin = int(sys.argv[1])
+
+    if pin is None or pin < 2 or pin > 27:
+        raise Exception('Invalid PIN set.')
+
+    input = DigitalInputDevice(pin)
+    status = 'closed' if input.value == 1 else 'open'
+    module = sys.argv[0].replace('.py', '')
+    
+    print(json.dumps({ 'module': module, 'status': status }))
+
+except Exception as error:
+    print(json.dumps({ 'error': str(error) }))
+
+finally:
+    sys.exit(1)
+```
+
+Das Signal wird nur an einem LED-Ausgang abgegriffen. Je nachdem, ob dort Strom anliegt oder nicht, ist die Klappe geöffnet bzw. geschlossen.
 
 ## Eindrücke
 <div style="display: flex; justify-content: center;">
