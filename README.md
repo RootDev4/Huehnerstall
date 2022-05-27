@@ -36,6 +36,11 @@ Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnitt
   <img src="https://user-images.githubusercontent.com/61932664/164431731-5ba0ccc4-252f-4563-b2c7-e2e1278545ee.jpg" style="width: 250px;">
 </div>
 
+## Nachtsicht
+Eine neue [Kamera](https://www.amazon.de/dp/B08C5GDG9Q) ermöglicht nun auch mittels Infrarot die Überwachung des Hühnerstalls bei Nacht.
+
+![stream mjpg](https://user-images.githubusercontent.com/61932664/170657367-4832d39e-346e-4ef8-ac75-b8ac833c3ba0.jpeg)
+
 ## PWA Screenshot
 <img src="https://user-images.githubusercontent.com/61932664/164433614-9bc2031c-7819-4a96-af65-c3dee4ce58f0.JPG" style="width: 250px;">
 
