@@ -30,10 +30,10 @@ Die Sensoren bzw. Steuerleitungen zum JOST Steuermodul werden über GPIO-Schnitt
 <img src="https://user-images.githubusercontent.com/61932664/164439927-c29ef9ee-406c-4363-8c64-9a849b151e25.jpeg" style="width: 250px;">
 
 ## Anbindung
-JosTechnik bietet unterschiedliche Zusatzmodule an, welche an die Steuereinheit angeschlossen werden können. Diese habe ich softwareseitig mit Pythonscripts ersetzt.
+JOSTechnik bietet unterschiedliche Zusatzmodule an, welche an die Steuereinheit angeschlossen werden können. Diese habe ich mit Pythonscripts ersetzt, welche an den entsprechenden Ein- bzw. Ausgängen Signale über Relais/Optokoppler schalten.
 
 ### Externer Taster
-Ein externer, kabelgebundener Taster kann angeschlossen werden, um die Hühnerklappe auch aus der Ferne öffnen und schließen zu können. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
+Ein externer, kabelgebundener Taster vom Hersteller kann angeschlossen werden, um die Hühnerklappe auch aus der Ferne öffnen und schließen zu können. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
 
 ```python
 #!/usr/bin/env python3
@@ -69,7 +69,7 @@ finally:
 Über den jeweiligen GPIO-Pin bekommt das Steuermodul das Signal, die Klappe zu öffnen oder zu schließen.
 
 ### Klappenstatus
-Eine externe, kabelgebundene Fernanzeige kann angeschlossen werden, um den Status der Klappe über eine rote LED (offen) oder grüne LED (geschlossen) anzuzeigen. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
+Eine externe, kabelgebundene Fernanzeige vom Hersteller kann angeschlossen werden, um den Status der Klappe über eine rote LED (offen) oder grüne LED (geschlossen) anzuzeigen. Das hierzu äquivalente Pythonscript sieht folgendermaßen aus:
 
 ```python
 #!/usr/bin/env python3
