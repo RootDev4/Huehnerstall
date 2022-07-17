@@ -135,11 +135,11 @@ window.onload = async () => {
         document.getElementById('refresh').addEventListener('click', () => location.reload())
 
         // Check if webcam server is available and start stream if so
-        fetch('http://192.168.178.44:9090/', { mode: 'no-cors' })
+        fetch(`http://${config.host}:${config.ports.webcam}/`, { mode: 'no-cors' })
             .then(() => {
                 const webcam = document.getElementById('webcam')
                 const stream = document.createElement('img')
-                stream.src = 'http://192.168.178.44:9090/stream.mjpg'
+                stream.src = `http://${config.host}:${config.ports.webcam}/stream.mjpg`
                 webcam.innerHTML = '' // Clear HTML
                 webcam.appendChild(stream)
             })
@@ -155,25 +155,24 @@ window.onload = async () => {
             event.target.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bitte warten ...'
             event.target.disabled = true
 
-            const flapManualMode = localStorage.getItem('flapManualMode') || null
-            const flapCurrentStatus = localStorage.getItem('flapCurrentStatus') || null
-            const setGpioPin = (flapCurrentStatus == 'open') ? config.gpio.control.close : config.gpio.control.open
+            const flapCurrentStatus = await readGPIO('flap-sensor', [config.gpio.status.flap])
+            
+            // Throw error if current status of the flap was not readable
+            if (!['open', 'closed'].includes(flapCurrentStatus.status)) throw new Error('Der aktuelle Status der Hühnerklappe konnte nicht erfasst werden. Reset nötig!')
 
-            // Throw error if current status of the flap is not stored locally
-            if (!['open', 'closed'].includes(flapCurrentStatus)) throw new Error('Der aktuelle Status der Hühnerklappe wurde nicht gespeichert. Reset nötig!')
+            const setGpioPin = (flapCurrentStatus.status == 'open') ? config.gpio.control.close : config.gpio.control.open
 
             // Open/close the flap
             readGPIO('flap-controller', [setGpioPin])
                 .then(data => {
                     if (!data.ok) throw new Error(`Die Steuerung der Hühnerklappe schlug aufgrund eines unbekannten Fehlers fehl (akt. Status: ${flapCurrentStatus}).`)
 
+                    // Check flap status
                     const checkFlapStatus = setInterval(async () => {
                         const newFlapStatus = await readGPIO('flap-sensor', [config.gpio.status.flap])
 
-                        if (newFlapStatus !== flapCurrentStatus) {
+                        if (newFlapStatus.status !== flapCurrentStatus.status) {
                             clearInterval(checkFlapStatus)
-
-                            localStorage.setItem('flapManualMode', (flapManualMode == 'false') ? 'true' : 'false')
                             location.reload()
                         }
                     }, 5 * 1000) // check every 5 seconds
@@ -192,6 +191,9 @@ window.onload = async () => {
 
 }
 
+/**
+ * 
+ */
 window.addEventListener('beforeunload', event => {
     event.preventDefault()
     e.returnValue = ''

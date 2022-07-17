@@ -1,1 +1,1 @@
-{"version":1,"gpio":{"status":{"door":17,"flap":18},"control":{"open":22,"close":27},"climate":4},"schedule":{"week":{"open":"07:00","close":"21:00"},"weekend":{"open":"05:00","close":"21:00"}}}
+{"version":1,"host":"192.168.178.102","ports":{"app":8080,"webcam":9090},"gpio":{"status":{"door":17,"flap":18},"control":{"open":22,"close":27},"climate":4},"schedule":{"week":{"open":"07:00","close":"21:00"},"weekend":{"open":"05:00","close":"21:00"}}}
