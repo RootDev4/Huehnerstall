@@ -90,10 +90,6 @@ const synchronize = config => {
             if (flap.error) throw new Error(flap.error)
             if (climate.error) throw new Error(climate.error)
 
-            // Initialize local storage if values not set
-            if (!['true', 'false'].includes(localStorage.getItem('flapManualMode'))) localStorage.setItem('flapManualMode', 'false')
-            if (!['open', 'closed'].includes(localStorage.getItem('flapCurrentStatus'))) localStorage.setItem('flapCurrentStatus', flap.status)
-
             // Update data
             document.getElementById('flap').innerText = translate(flap.status)
             document.getElementById('door').innerText = translate(door.status)
@@ -105,9 +101,6 @@ const synchronize = config => {
             document.getElementById('flapStatusInfo').innerText = text
             document.getElementById('flapControlBtn').innerText = (flap.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
             document.getElementById('flapControlBtn').style.display = 'inline-block'
-
-            // Show warning icon if flap was manually controlled because controller module requires full pass
-            document.getElementById('flapManualModeAlert').style.display = (localStorage.getItem('flapManualMode') == 'true') ? 'block' : 'none'
 
             // Return data
             resolve({ door: door.status, flap: flap.status, climate: climate })
