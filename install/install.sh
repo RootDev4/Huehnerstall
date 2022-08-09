@@ -2,10 +2,10 @@
 
 # Update and install prerequisites
 apt update && apt upgrade -y
-apt install curl gcc g++ make git python3-pip ffmpeg -y
+apt install curl gcc g++ make git python3-pip -y
 
 #
-pip3 install Adafruit_DHT gpiozero picamera
+pip3 install Adafruit_DHT gpiozero
 
 # Download and install NodeJS and NPM
 curl -fsSL https://deb.nodesource.com/setup_17.x | bash -

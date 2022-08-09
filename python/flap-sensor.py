@@ -13,12 +13,11 @@ try:
 
     input = DigitalInputDevice(pin)
     status = 'closed' if input.value == 1 else 'open'
-    module = sys.argv[0].replace('.py', '')
-    
-    print(json.dumps({ 'module': module, 'status': status }))
+
+    print(json.dumps({'status': status}))
 
 except Exception as error:
-    print(json.dumps({ 'error': str(error) }))
+    print(json.dumps({'error': str(error)}))
 
 finally:
     sys.exit(1)

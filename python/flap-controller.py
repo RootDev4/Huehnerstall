@@ -12,14 +12,13 @@ try:
         raise Exception('Invalid PIN set.')
     
     relais = DigitalOutputDevice(pin)
-    module = sys.argv[0].replace('.py', '')
-    
+        
     time.sleep(1)
     relais.on()
     time.sleep(2)
     relais.off()
 
-    print(json.dumps({ 'module': module, 'ok': True }))
+    print(json.dumps({ 'ok': True }))
 
 except Exception as error:
     print(json.dumps({ 'error': str(error) }))

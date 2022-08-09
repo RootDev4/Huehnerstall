@@ -1,8 +1,10 @@
 const express = require('express')
 const path = require('path')
-
 const app = express()
-const port = 8080
+
+// Config file
+const dotenv = require('dotenv')
+dotenv.config()
 
 // Set template engine
 app.set('views', path.join(__dirname, 'public'))
@@ -17,17 +19,13 @@ app.use('/bootstrap-icons', express.static(path.join(__dirname, 'node_modules/bo
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, 'public')))
-app.use(express.static(path.join(__dirname, 'snapshots')))
 
 // Handle errors
-app.use((error, req, res, next) => {
-    res.status(error.status || 500)
-    res.json({ error: error })
-})
+app.use((error, req, res, next) => res.status(error.status || 500).json({ error: error }))
 
 // Routes for requests
-const router = require('./routes/router')
+const router = require('./router')
 app.use('/', router)
 
 // Start server
-app.listen(port, () => console.log(`Server is up and listen on port ${port}`))
+app.listen(process.env.PORT, () => console.log(`Server is up and listen on port ${process.env.PORT}`))
