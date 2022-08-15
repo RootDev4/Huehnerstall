@@ -17,6 +17,11 @@ body {
     transform: scaleX(-1);
 }
 
+.gpio-error {
+    text-decoration: none;
+    color: red;
+}
+
 #refresh {
     cursor: pointer;
 }

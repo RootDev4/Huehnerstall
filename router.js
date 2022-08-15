@@ -10,14 +10,11 @@ const fs = require('fs')
  */
 const readGPIO = (path, args = []) => {
     return new Promise((resolve, reject) => {
-        if (!fs.existsSync(`./python/${path}.py`)) reject({ ok: false, error: `Module ${path}.py not found` })
+        if (!fs.existsSync(`./python/${path}.py`)) reject(`Module ${path}.py not found`)
 
         const python = spawn('python', [`./python/${path}.py`, ...args])
-        python.stdout.on('data', data => {
-            console.log(JSON.parse(data))
-            resolve({ ok: true, data: data.toString() })
-        })
-        python.stderr.on('data', data => reject({ ok: false, error: data.toString() }))
+        python.stdout.on('data', data => resolve({ ok: true, data: data.toString() }))
+        python.stderr.on('data', data => resolve({ ok: false, error: data.toString() }))
     })
 }
 
@@ -30,12 +27,19 @@ router.post('/read-gpio', async (req, res) => {
         const gpioFlapSensor = await readGPIO('flap-sensor', [process.env.GPIO_STATUS_FLAP])
         const gpioClimateSensor = await readGPIO('climate-sensor', [process.env.GPIO_CLIMATE_SENSOR])
 
-        res.json({
-            ok: true,
-            gpioDoorSensor: JSON.parse(gpioDoorSensor),
-            gpioFlapSensor: JSON.parse(gpioFlapSensor),
-            gpioClimateSensor: JSON.parse(gpioClimateSensor)
-        })
+        // Add flap schedule plan
+        gpioFlapSensor.schedule = {
+            weekday: {
+                open: process.env.SCHEDULE_WEEKDAY_OPEN,
+                close: process.env.SCHEDULE_WEEKDAY_CLOSE
+            },
+            weekend: {
+                open: process.env.SCHEDULE_WEEKEND_OPEN,
+                close: process.env.SCHEDULE_WEEKEND_CLOSE
+            }
+        }
+
+        res.json({ ok: true, gpioDoorSensor, gpioFlapSensor, gpioClimateSensor })
     } catch (error) {
         res.json({ ok: false, error: error })
     }
