@@ -1,6 +1,14 @@
 const router = require('express').Router()
 const { spawn } = require('child_process')
 const fs = require('fs')
+const crypto = require('crypto')
+
+/**
+ * 
+ * @param {*} str 
+ * @returns 
+ */
+const sanitize = str => str.toString().trim().replace("'", "\'")
 
 /**
  * Request GPIO via python
@@ -41,15 +49,41 @@ router.post('/read-gpio', async (req, res) => {
 
         res.json({ ok: true, gpioDoorSensor, gpioFlapSensor, gpioClimateSensor })
     } catch (error) {
-        res.json({ ok: false, error: error })
+        res.json({ ok: false, error: sanitize(error) })
+    }
+})
+
+/**
+ * 
+ */
+router.post('/control', async (req, res) => {
+    try {
+        const password = req.body.password || null
+        if (!password) return res.json({ ok: false, error: 'Passwort ist ungültig.' })
+
+        // Hash password
+        const hash = crypto.createHash('sha256').update(password.trim()).digest('hex')
+        if (hash !== process.env.PASSWORD) return res.json({ ok: false, error: 'Passwort ist ungültig.' })
+
+        // Get flap status
+        const gpioFlapSensor = await readGPIO('flap-sensor', [process.env.GPIO_STATUS_FLAP])
+        const flapStatus = JSON.parse(gpioFlapSensor.data) || null
+        if (!['open', 'closed'].includes(flapStatus.status)) return res.json({ ok: false, error: 'GPIO-Anfrage fehlgeschlagen.' })
+
+        // Open/close flap
+        const gpioFlapController = await readGPIO('flap-controller', [(flapStatus.status === 'open') ? process.env.GPIO_CLOSE_FLAP : process.env.GPIO_OPEN_FLAP])
+        if (gpioFlapController.ok === false) return res.json({ ok: false, error: gpioFlapController.error })
+
+        res.json({ ok: true, data: `Die Hühnerklappe wird nun ${(flapStatus.status === 'open') ? 'geschlossen' : 'geöffnet'}.` })
+    } catch (error) {
+        res.json({ ok: false, error: sanitize(error) })
     }
 })
 
 /**
  * Main route
  */
-router.get('/', (req, res) => {
-    res.render('index')
-})
+router.get('/', (req, res) => res.render('index'))
 
+//
 module.exports = router

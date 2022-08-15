@@ -41,6 +41,13 @@ const getTimeSchedule = (config, status) => {
 }
 
 /**
+ * 
+ * @param {*} msec 
+ * @returns 
+ */
+const reloadAfterPeriod = msec => setTimeout(() => location.reload(), msec)
+
+/**
  * Main
  */
 window.onload = async () => {
@@ -96,29 +103,44 @@ window.onload = async () => {
     document.getElementById('flapControlBtn').addEventListener('click', async event => {
         event.preventDefault()
 
-        event.target.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bitte warten ...'
-        event.target.disabled = true
-
         //
         Swal.fire({
-            title: 'Passwort',
+            title: 'Passwort erforderlich',
             html: `<input type="password" id="password" class="swal2-input" placeholder="Passwort">`,
             confirmButtonText: 'senden',
             focusConfirm: false,
             showCancelButton: true,
             cancelButtonText: 'abbrechen',
-            preConfirm: () => {
-                const password = Swal.getPopup().querySelector('#password').value
-                if (!password) Swal.showValidationMessage('Bitte das Passwort eingeben.')
+            preConfirm: async () => {
+                const password = Swal.getPopup().querySelector('#password').value || null
+                if (!password) return Swal.showValidationMessage('Bitte das Passwort eingeben.')
                 
-                // fetch
-                return { password: password }
+                return fetch('/control', {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                })
+                .then(response => response.json())
+                .then(data => data)
+                .catch(error => error)
             }
-        }).then((result) => {
-            Swal.fire(`
-    Password: ${result.value.password}
-  `.trim())
+        }).then(result => {
+            if (result.isConfirmed) {
+                Swal.fire(result.value.data || result.value.error)
+
+                if (result.value.ok === true) {
+                    document.getElementById('flap').innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>'
+                    document.getElementById('flapStatusInfo').innerHTML = result.value.data || ''
+                    event.target.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Bitte warten ...'
+                    event.target.disabled = true
+                }
+
+                reloadAfterPeriod(60 * 1000)
+            }
         })
     })
+
+    // Reload app
+    document.getElementById('refresh').addEventListener('click', () => location.reload())
 
 }
