@@ -1,7 +1,7 @@
 'use strict'
 
 /**
- * 
+ * Show error message
  * @param {*} msg 
  * @returns 
  */
@@ -30,7 +30,6 @@ const translate = status => {
  * @returns {String} open/close time plan
  */
 const getTimeSchedule = (config, status) => {
-    //const flapCurrentStatus = localStorage.getItem('flapCurrentStatus')
     const currentWeekday = new Date().toLocaleString('de', { weekday: 'short' })
 
     // Check if current weekday is at weekend
