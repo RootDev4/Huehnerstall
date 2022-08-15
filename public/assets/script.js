@@ -100,6 +100,25 @@ window.onload = async () => {
         event.target.disabled = true
 
         //
+        Swal.fire({
+            title: 'Passwort',
+            html: `<input type="password" id="password" class="swal2-input" placeholder="Passwort">`,
+            confirmButtonText: 'senden',
+            focusConfirm: false,
+            showCancelButton: true,
+            cancelButtonText: 'abbrechen',
+            preConfirm: () => {
+                const password = Swal.getPopup().querySelector('#password').value
+                if (!password) Swal.showValidationMessage('Bitte das Passwort eingeben.')
+                
+                // fetch
+                return { password: password }
+            }
+        }).then((result) => {
+            Swal.fire(`
+    Password: ${result.value.password}
+  `.trim())
+        })
     })
 
 }

@@ -14,6 +14,7 @@ app.set('view engine', 'ejs')
 app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')))
 app.use('/bootstrap', express.static(path.join(__dirname, 'node_modules/bootstrap/dist')))
 app.use('/bootstrap-icons', express.static(path.join(__dirname, 'node_modules/bootstrap-icons/font')))
+app.use('/sweetalert2', express.static(path.join(__dirname, 'node_modules/sweetalert2/dist')))
 
 // Configure express
 app.use(express.json())
