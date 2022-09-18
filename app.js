@@ -28,5 +28,5 @@ app.use((error, req, res, next) => res.status(error.status || 500).json({ error:
 const router = require('./router')
 app.use('/', router)
 
-// Start server
+// Start HTTP server
 app.listen(process.env.PORT, () => console.log(`Server is up and listen on port ${process.env.PORT}`))
