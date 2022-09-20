@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # Python script to get temperature and humidity from sensor connected to Raspberry Pi
 
+import warnings
+warnings.filterwarnings('ignore')
+
 import json, sys
 
 try:
@@ -19,6 +22,9 @@ try:
         print(json.dumps(data))
     else:
         raise Exception('Failed to read climate data.')
+
+except ImportError as error:
+    print(json.dumps({'error': str('Cannot import Adafruit_DHT module')}))
 
 except Exception as error:
     print(json.dumps({ 'error': str(error) }))

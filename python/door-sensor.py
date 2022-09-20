@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # Python script to get door status of the chicken coop.
 
+import warnings
+warnings.filterwarnings('ignore')
+
 import json, sys
 
 try:
@@ -16,8 +19,11 @@ try:
 
     print(json.dumps({'status': status}))
 
+except ImportError as error:
+    print(json.dumps({'error': str('Cannot import gpiozero module')}))
+
 except Exception as error:
-    print(json.dumps({'error': str(error)}))
+    print(json.dumps({'error': error}))
 
 finally:
     sys.exit(1)

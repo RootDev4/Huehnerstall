@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 #  Python script to open/close the flap over control module connected to Raspberry Pi.
 
+import warnings
+warnings.filterwarnings('ignore')
+
 import time, json, sys
 
 try:
@@ -19,6 +22,9 @@ try:
     relais.off()
 
     print(json.dumps({ 'ok': True }))
+
+except ImportError as error:
+    print(json.dumps({'error': str('Cannot import gpiozero module')}))
 
 except Exception as error:
     print(json.dumps({ 'error': str(error) }))

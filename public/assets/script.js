@@ -5,7 +5,7 @@
  * @param {*} msg 
  * @returns 
  */
-const showError = msg => $('div#errorMsg > span.message').html(msg).parent().slideDown()
+const showError = msg => $('div#errorMsg > span.message').html('<b>Fehler:</b> ' + msg).parent().slideDown()
 
 /**
  * Translate status text into German
@@ -52,52 +52,45 @@ const reloadAfterPeriod = msec => setTimeout(() => location.reload(), msec)
  */
 window.onload = async () => {
 
-    // Get sensor data
-    fetch('/read-gpio', { method: 'post', headers: { 'Content-Type': 'application/json' }})
-    .then(response => response.json())
-    .then(data => {
-        if (data.ok === true) {
+    // Get flap status
+    fetch('/read-gpio/flap').then(response => response.json()).then(data => {
+        if (!data.ok) throw new Error(data.error)
+        document.getElementById('flap').innerText = translate(data.result.status)
+        document.getElementById('flapControlBtn').innerText = (data.result.status === 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
+        document.getElementById('flapControlBtn').style.display = 'inline-block'
+    }).catch(error => document.getElementById('door').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
+    
+    // Get door status
+    fetch('/read-gpio/door').then(response => response.json()).then(data => {
+        if (!data.ok) throw new Error(data.error)
+        document.getElementById('door').innerText = translate(data.result.status)
+    }).catch(error => document.getElementById('door').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
 
-            // Get door status
-            if (data.gpioDoorSensor.ok === true) {
-                const door = JSON.parse(data.gpioDoorSensor.data)
-                document.getElementById('door').innerText = translate(door.status)
-            } else {
-                document.getElementById('door').innerHTML = `<a href="#" class="gpio-error" onclick="alert('${data.gpioDoorSensor.error}')">Fehler</a>`
-            }
-
-            // Get flap status
-            if (data.gpioFlapSensor.ok === true) {
-                const flap = JSON.parse(data.gpioFlapSensor.data)
-                document.getElementById('flap').innerText = translate(flap.status)
-
-                // Update flap control section
-                const text = `Die Hühnerklappe ist ${translate(flap.status)} und ${(flap.status == 'open') ? 'schließt' : 'öffnet'} um ${getTimeSchedule(data.gpioFlapSensor.schedule, flap.status)} Uhr automatisch.`
-                document.getElementById('flapStatusInfo').innerText = text
-                document.getElementById('flapControlBtn').innerText = (flap.status == 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-                document.getElementById('flapControlBtn').style.display = 'inline-block'
-            } else {
-                document.getElementById('flap').innerHTML = `<a href="#" class="gpio-error" onclick="alert('${data.gpioFlapSensor.error}')">Fehler</a>`
-            }
-
-            // Get temperature & humidity
-            if (data.gpioClimateSensor.ok === true) {
-                const climate = JSON.parse(data.gpioClimateSensor.data)
-                document.getElementById('temperature').innerText = climate.temperature + ' Grad' || 'n/a'
-                document.getElementById('humidity').innerText = climate.humidity + '%' || 'n/a'
-            } else {
-                document.getElementById('temperature').innerHTML = `<a href="#" class="gpio-error" onclick="alert('${data.gpioClimateSensor.error}')">Fehler</a>`
-                document.getElementById('humidity').innerHTML = `<a href="#" class="gpio-error" onclick="alert('${data.gpioClimateSensor.error}')">Fehler</a>`
-            }
-        } else {
-            if (data.error) {
-                showError(`Folgender Fehler ist beim Abfragen der GPIO-Schnittstelle aufgetreten:<br>${data.error}`)
-            } else {
-                showError('Ein unbekannter Fehler ist beim Abfragen der GPIO-Schnittstelle aufgetreten.')
-            }
-        }
+    // Get climate status
+    fetch('/read-gpio/climate').then(response => response.json()).then(data => {
+        if (!data.ok) throw new Error(data.error)
+        document.getElementById('temperature').innerText = data.result.temperature + ' Grad' || 'n/a'
+        document.getElementById('humidity').innerText = data.result.humidity + '%' || 'n/a'
+    }).catch(error => {
+        document.getElementById('temperature').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`
+        document.getElementById('humidity').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`
     })
-    .catch(error => showError(error))
+
+    // Take snapshot
+    document.getElementById('takeSnapshot').addEventListener('click', async event => {
+        event.preventDefault()
+
+        fetch('/snapshot').then(response => response.json()).then(data => {
+            if (!data.ok) throw new Error(data.error)
+
+            const downloadLink = document.createElement('a')
+            document.body.appendChild(downloadLink)
+            downloadLink.href = data.snapshot
+            downloadLink.target = '_self'
+            downloadLink.download = data.filename
+            downloadLink.click()
+        }).catch(error => showError(error))
+    })
 
     // Open/close flap manually
     document.getElementById('flapControlBtn').addEventListener('click', async event => {

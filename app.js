@@ -24,8 +24,14 @@ app.use(express.static(path.join(__dirname, 'public')))
 // Handle errors
 app.use((error, req, res, next) => res.status(error.status || 500).json({ error: error }))
 
+// Init webcam
+const livestream = require('rpi_camera_livestream')
+livestream.register(app, process.env.PORT)
+livestream.setPathname('/webcam')
+livestream.start()
+
 // Routes for requests
-const router = require('./router')
+const router = require('./router')(livestream)
 app.use('/', router)
 
 // Start HTTP server

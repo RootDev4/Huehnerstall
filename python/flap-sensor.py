@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # Python script to get flap status from control module connected to Raspberry Pi.
 
+import warnings
+warnings.filterwarnings('ignore')
+
 import json, sys
 
 try:
@@ -15,6 +18,9 @@ try:
     status = 'closed' if input.value == 1 else 'open'
 
     print(json.dumps({'status': status}))
+
+except ImportError as error:
+    print(json.dumps({'error': str('Cannot import gpiozero module')}))
 
 except Exception as error:
     print(json.dumps({'error': str(error)}))
