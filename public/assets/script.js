@@ -25,22 +25,6 @@ const translate = status => {
 }
 
 /**
- * Get time plan from config object
- * @param {Object} config JSON config object
- * @returns {String} open/close time plan
- */
-const getTimeSchedule = (config, status) => {
-    const currentWeekday = new Date().toLocaleString('de', { weekday: 'short' })
-
-    // Check if current weekday is at weekend
-    if (['Sa', 'So'].includes(currentWeekday)) {
-        return (status == 'open') ? config.weekend.close : config.weekend.open
-    } else {
-        return (status == 'open') ? config.weekday.close : config.weekday.open
-    }
-}
-
-/**
  * 
  * @param {*} msec 
  * @returns 
