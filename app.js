@@ -28,6 +28,7 @@ app.use((error, req, res, next) => res.status(error.status || 500).json({ error:
 const livestream = require('rpi_camera_livestream')
 livestream.register(app, process.env.PORT)
 livestream.setPathname('/webcam')
+livestream.setQuality(7)
 livestream.start()
 
 // Routes for requests

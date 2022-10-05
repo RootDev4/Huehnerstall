@@ -51,10 +51,11 @@ module.exports = livestream => {
     router.get('/snapshot', async (req, res) => {
         try {
             const snapshot = await livestream.getSnapshot()
-            const filetype = livestream.config.encoding.toLocaleLowerCase()
-            const filename = `${crypto.createHash('sha256').update(snapshot.toString()).digest('hex')}.${filetype}`
 
             if (!snapshot) throw new Error('Webcam liefert kein Bild.')
+
+            const filetype = livestream.config.encoding.toLowerCase()
+            const filename = `${crypto.createHash('sha256').update(snapshot.toString()).digest('hex')}.${filetype}`
 
             fs.writeFile(`./snapshots/${filename}`, snapshot.split(';base64,')[1], 'base64', error => {
                 if (error) throw new Error(error)
@@ -79,7 +80,7 @@ module.exports = livestream => {
             if (hash !== process.env.PASSWORD) return res.json({ ok: false, error: 'Passwort ist ungültig.' })
 
             // Get flap status
-            const gpioFlapSensor = await readGPIO('flap-sensor', [process.env.GPIO_STATUS_FLAP])
+            const gpioFlapSensor = await readGPIO('flap-sensor', [process.env.GPIO_FLAP_SENSOR])
             const flapStatus = JSON.parse(gpioFlapSensor.data) || null
             if (!['open', 'closed'].includes(flapStatus.status)) return res.json({ ok: false, error: 'GPIO-Anfrage fehlgeschlagen.' })
 
