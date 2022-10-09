@@ -40,9 +40,10 @@ window.onload = async () => {
     fetch('/read-gpio/flap').then(response => response.json()).then(data => {
         if (!data.ok) throw new Error(data.error)
         document.getElementById('flap').innerText = translate(data.result.status)
-        document.getElementById('flapControlBtn').innerText = (data.result.status === 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-        document.getElementById('flapControlBtn').style.display = 'inline-block'
-    }).catch(error => document.getElementById('door').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
+        document.getElementById('flapControlBtn').classList.value = ''
+        document.getElementById('flapControlBtn').classList.add('bi', (data.result.status === 'open') ? 'bi-lock' : 'bi-unlock')
+        document.getElementById('flapControlBtn').title = (data.result.status === 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
+    }).catch(error => document.getElementById('flap').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
     
     // Get door status
     fetch('/read-gpio/door').then(response => response.json()).then(data => {

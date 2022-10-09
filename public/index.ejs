@@ -44,9 +44,12 @@
                             <div class="col-12 mb-2">
                                 <i class="bi bi-house-door pe-2"></i>
                                 Hühnerklappe:
-                                <span class="ps-1" id="flap">
+                                <span class="ps-1 pe-1" id="flap">
                                     <div class="spinner-border spinner-border-sm" role="status"></div>
                                 </span>
+                                <a href="#">
+                                    <i class="bi" id="flapControlBtn" title=""></i>
+                                </a>
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="bi bi-door-closed pe-2"></i>
@@ -76,23 +79,15 @@
                     <div class="h-100 p-4 bg-light border rounded-3">
                         <div class="d-flex justify-content-between">
                             <h2>Webcam</h2>
-                            <a href="/webcam" target="_blank" class="d-block align-self-center">
-                                <i class="bi bi-display pt-2"></i>
-                            </a>
+                            <div class="align-self-center pt-2">
+                                <a href="#" class="me-3" id="takeSnapshot"><i class="bi bi-camera"></i></a>
+                                <a href="/webcam" target="_blank"><i class="bi bi-display"></i></a>
+                            </div>
                         </div>
                         <div id="webcam">
                             <img src="/webcam" style="transform: scale(-1, -1)">
                         </div>
                         <div class="alert alert-danger hidden"></div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <div class="h-100 p-4 bg-light border rounded-3">
-                        <h2>Steuerung</h2>
-                        <div class="mt-2">
-                            <button class="btn btn-sm btn-outline-primary mb-2" id="takeSnapshot">Foto aufnehmen</button>
-                            <button class="btn btn-sm btn-outline-primary hidden" id="flapControlBtn"></button>
-                        </div>
                     </div>
                 </div>
             </div>
