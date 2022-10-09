@@ -120,4 +120,4 @@ Eine neue [Kamera](https://www.amazon.de/dp/B08C5GDG9Q) ermöglicht nun auch mit
 - [x] Software (App)
 - [ ] Fehlererkennung und Verzögerungstoleranzen
 - [ ] manuellen Betrieb steuern und Automatik anpassen
-- [ ] Webcam-Stream via raspivid (derzeit: Python3 picamera)
+- [x] Webcam-Stream via raspivid (derzeit: Python3 picamera)
