@@ -29,21 +29,16 @@ const readGPIO = (path, args = []) => {
 module.exports = livestream => {
 
     /**
-     * Route for requesting GPIO module via python
+     * Main route
      */
-    router.get('/read-gpio/:sensor', async (req, res) => {
-        try {
-            const sensor = req.params.sensor.toLocaleLowerCase().trim()
-            const gpioSensor = await readGPIO(`${sensor}-sensor`, [process.env[`GPIO_${sensor.toUpperCase()}_SENSOR`]])
+    router.get('/', async (req, res) => {
+        const rpiData = {}
+        rpiData.door = await readGPIO('door-sensor', [process.env['GPIO_DOOR_SENSOR']])
+        rpiData.flap = await readGPIO('flap-sensor', [process.env['GPIO_FLAP_SENSOR']])
+        rpiData.climate = await readGPIO('climate-sensor', [process.env['GPIO_CLIMATE_SENSOR']])
 
-            if (gpioSensor.error) throw new Error(gpioSensor.error)
-
-            res.json({ ok: true, result: gpioSensor })
-        } catch (error) {
-            res.json({ ok: false, error: sanitize(error) })
-        }
+        res.render('index', { rpiData })
     })
-
 
     /**
      * Route for taking a snapshot
@@ -93,11 +88,6 @@ module.exports = livestream => {
             res.json({ ok: false, error: sanitize(error) })
         }
     })
-
-    /**
-     * Main route
-     */
-    router.get('/', (req, res) => res.render('index'))
 
     //
     return router

@@ -8,23 +8,6 @@
 const showError = msg => $('div#errorMsg > span.message').html('<b>Fehler:</b> ' + msg).parent().slideDown()
 
 /**
- * Translate status text into German
- * @param {String} status open/close
- * @returns {string} German translation
- */
-const translate = status => {
-    switch (status) {
-        case 'open':
-            return 'geöffnet'
-        case 'closed':
-            return 'geschlossen'
-        case 'n/a':
-        default:
-            return 'n/a'
-    }
-}
-
-/**
  * 
  * @param {*} msec 
  * @returns 
@@ -35,31 +18,6 @@ const reloadAfterPeriod = msec => setTimeout(() => location.reload(), msec)
  * Main
  */
 window.onload = async () => {
-
-    // Get flap status
-    fetch('/read-gpio/flap').then(response => response.json()).then(data => {
-        if (!data.ok) throw new Error(data.error)
-        document.getElementById('flap').innerText = translate(data.result.status)
-        document.getElementById('flapControlBtn').classList.value = ''
-        document.getElementById('flapControlBtn').classList.add('bi', (data.result.status === 'open') ? 'bi-lock' : 'bi-unlock')
-        document.getElementById('flapControlBtn').title = (data.result.status === 'open') ? 'Hühnerklappe jetzt schließen' : 'Hühnerklappe jetzt öffnen'
-    }).catch(error => document.getElementById('flap').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
-    
-    // Get door status
-    fetch('/read-gpio/door').then(response => response.json()).then(data => {
-        if (!data.ok) throw new Error(data.error)
-        document.getElementById('door').innerText = translate(data.result.status)
-    }).catch(error => document.getElementById('door').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`)
-
-    // Get climate status
-    fetch('/read-gpio/climate').then(response => response.json()).then(data => {
-        if (!data.ok) throw new Error(data.error)
-        document.getElementById('temperature').innerText = data.result.temperature + ' Grad' || 'n/a'
-        document.getElementById('humidity').innerText = data.result.humidity + '%' || 'n/a'
-    }).catch(error => {
-        document.getElementById('temperature').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`
-        document.getElementById('humidity').innerHTML = `<a href="#" class="gpio-error" onclick="showError('${error}')">Fehler</a>`
-    })
 
     // Take snapshot
     document.getElementById('takeSnapshot').addEventListener('click', async event => {

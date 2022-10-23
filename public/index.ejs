@@ -17,6 +17,7 @@
     <script defer type="text/javascript" src="/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script defer type="text/javascript" src="/sweetalert2/sweetalert2.min.js"></script>
     <script defer type="text/javascript" src="/assets/script.js"></script>
+    <% const translate = status => (status === 'open') ? 'geöffnet' : (status === 'closed') ? 'geschlossen' : status %>
 </head>
 <body>
     <main>
@@ -45,7 +46,8 @@
                                 <i class="bi bi-house-door pe-2"></i>
                                 Hühnerklappe:
                                 <span class="ps-1 pe-1" id="flap">
-                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <%= translate(rpiData.flap.status) %>
+                                    <a  href="#" class="ms-1 bi bi-<%= (rpiData.flap.status == 'open') ? 'lock' : 'unlock' %>" id="flapControlBtn"></a>
                                 </span>
                                 <a href="#">
                                     <i class="bi" id="flapControlBtn" title=""></i>
@@ -55,21 +57,21 @@
                                 <i class="bi bi-door-closed pe-2"></i>
                                 Stalltüre:
                                 <span class="ps-1" id="door">
-                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <%= translate(rpiData.door.status) %>
                                 </span>
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="bi bi-thermometer-sun pe-2"></i>
                                 Temperatur:
                                 <span class="px-1" id="temperature">
-                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <%= rpiData.climate.temperature %> Grad
                                 </span>
                             </div>
                             <div class="col-12">
                                 <i class="bi bi-moisture pe-2"></i>
                                 Luftfeuchtigkeit:
                                 <span class="ps-1" id="humidity">
-                                    <div class="spinner-border spinner-border-sm" role="status"></div>
+                                    <%= rpiData.climate.humidity %>%
                                 </span>
                             </div>
                         </div>
