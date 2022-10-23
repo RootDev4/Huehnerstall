@@ -62,16 +62,23 @@
                             </div>
                             <div class="col-12 mb-2">
                                 <i class="bi bi-thermometer-sun pe-2"></i>
-                                Temperatur:
+                                Stall-Temperatur:
                                 <span class="px-1" id="temperature">
                                     <%= rpiData.climate.temperature %> Grad
                                 </span>
                             </div>
-                            <div class="col-12">
+                            <div class="col-12 mb-2">
                                 <i class="bi bi-moisture pe-2"></i>
                                 Luftfeuchtigkeit:
                                 <span class="ps-1" id="humidity">
                                     <%= rpiData.climate.humidity %>%
+                                </span>
+                            </div>
+                            <div class="col-12">
+                                <i class="bi bi-cpu pe-2"></i>
+                                System-Temperatur:
+                                <span class="ps-1" id="humidity">
+                                    <%= rpiData.temp %> Grad
                                 </span>
                             </div>
                         </div>

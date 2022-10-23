@@ -33,9 +33,10 @@ module.exports = livestream => {
      */
     router.get('/', async (req, res) => {
         const rpiData = {}
-        rpiData.door = await readGPIO('door-sensor', [process.env['GPIO_DOOR_SENSOR']])
-        rpiData.flap = await readGPIO('flap-sensor', [process.env['GPIO_FLAP_SENSOR']])
-        rpiData.climate = await readGPIO('climate-sensor', [process.env['GPIO_CLIMATE_SENSOR']])
+        rpiData.door = await readGPIO('door-sensor', [process.env['GPIO_DOOR_SENSOR']]) || 'n/a'
+        rpiData.flap = await readGPIO('flap-sensor', [process.env['GPIO_FLAP_SENSOR']]) || 'n/a'
+        rpiData.climate = await readGPIO('climate-sensor', [process.env['GPIO_CLIMATE_SENSOR']]) || 'n/a'
+        rpiData.temp = (fs.readFileSync('/sys/class/thermal/thermal_zone0/temp') / 1000).toFixed(1) || 'n/a'
 
         res.render('index', { rpiData })
     })
