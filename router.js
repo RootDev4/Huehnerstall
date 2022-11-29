@@ -38,7 +38,7 @@ module.exports = livestream => {
         rpiData.climate = await readGPIO('climate-sensor', [process.env['GPIO_CLIMATE_SENSOR']]) || 'n/a'
         rpiData.temp = (fs.readFileSync('/sys/class/thermal/thermal_zone0/temp') / 1000).toFixed(1) || 'n/a'
 
-        res.render('index', { rpiData })
+        res.render('index', { rpiData, streamURL: livestream.pathname })
     })
 
     /**
@@ -59,6 +59,7 @@ module.exports = livestream => {
                 res.json({ ok: true, filename, snapshot })
             })
         } catch (error) {
+            console.log(error)
             res.json({ ok: false, error: sanitize(error) })
         }
     })
@@ -77,15 +78,15 @@ module.exports = livestream => {
 
             // Get flap status
             const gpioFlapSensor = await readGPIO('flap-sensor', [process.env.GPIO_FLAP_SENSOR])
-            const flapStatus = JSON.parse(gpioFlapSensor.data) || null
-            if (!['open', 'closed'].includes(flapStatus.status)) return res.json({ ok: false, error: 'GPIO-Anfrage fehlgeschlagen.' })
+            if (!['open', 'closed'].includes(gpioFlapSensor.status)) return res.json({ ok: false, error: 'GPIO-Anfrage fehlgeschlagen.' })
 
             // Open/close flap
-            const gpioFlapController = await readGPIO('flap-controller', [(flapStatus.status === 'open') ? process.env.GPIO_CLOSE_FLAP : process.env.GPIO_OPEN_FLAP])
+            const gpioFlapController = await readGPIO('flap-controller', [(gpioFlapSensor.status === 'open') ? process.env.GPIO_CLOSE_FLAP : process.env.GPIO_OPEN_FLAP])
             if (gpioFlapController.ok === false) return res.json({ ok: false, error: gpioFlapController.error })
 
-            res.json({ ok: true, data: `Die Hühnerklappe wird nun ${(flapStatus.status === 'open') ? 'geschlossen' : 'geöffnet'}.` })
+            res.json({ ok: true, data: `Die Hühnerklappe wird nun ${(gpioFlapSensor.status === 'open') ? 'geschlossen' : 'geöffnet'}.` })
         } catch (error) {
+            console.log(error)
             res.json({ ok: false, error: sanitize(error) })
         }
     })

@@ -15,9 +15,25 @@ const showError = msg => $('div#errorMsg > span.message').html('<b>Fehler:</b> '
 const reloadAfterPeriod = msec => setTimeout(() => location.reload(), msec)
 
 /**
+ * 
+ * @param {*} buffer 
+ * @returns 
+ */
+const bufferToBase64 = buffer => {
+    const bytes = new Uint8Array(buffer)
+    let binary = ''
+    for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i])
+    return `data:image/png;base64,${window.btoa(binary)}`
+}
+
+/**
  * Main
  */
 window.onload = async () => {
+    const socket = io()
+    const image = document.getElementById('webstream')
+
+    socket.on('stream', data => image.src = bufferToBase64(data))
 
     // Take snapshot
     document.getElementById('takeSnapshot').addEventListener('click', async event => {
@@ -33,6 +49,19 @@ window.onload = async () => {
             downloadLink.download = data.filename
             downloadLink.click()
         }).catch(error => showError(error))
+    })
+
+    // Open webstream in fullscreen
+    document.getElementById('fullscreen').addEventListener('click', event => {
+        event.preventDefault()
+
+        Swal.fire({
+            html: `<img src="/webcam" style="transform: scale(-1, -1); width: 100%;">`,
+            showConfirmButton: false,
+            showCancelButton: true,
+            cancelButtonText: 'schließen',
+            width: 'auto'
+        })
     })
 
     // Open/close flap manually
@@ -71,12 +100,15 @@ window.onload = async () => {
                     event.target.disabled = true
                 }
 
-                reloadAfterPeriod(60 * 1000)
+                reloadAfterPeriod(70 * 1000) // 70sec
             }
         })
     })
 
     // Reload app
-    document.getElementById('refresh').addEventListener('click', () => location.reload())
+    document.getElementById('refresh').addEventListener('click', event => {
+        event.target.classList.add('spinner')
+        setTimeout(() => location.reload(), 3000)
+    })
 
 }

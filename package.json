@@ -12,7 +12,8 @@
     "jquery": "^3.6.0",
     "node-wifi": "^2.0.16",
     "rpi_camera_livestream": "^1.0.0",
-    "sweetalert2": "^11.4.26"
+    "sweetalert2": "^11.4.26",
+    "socket.io": "^4.5.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

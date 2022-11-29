@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/bootstrap-icons/bootstrap-icons.css">
     <link rel="stylesheet" href="/sweetalert2/sweetalert2.min.css">
     <link rel="stylesheet" href="/assets/style.css">
+    <script defer type="text/javascript" src="/socket-io/socket.io.min.js"></script>
     <script defer type="text/javascript" src="/jquery/jquery.min.js"></script>
     <script defer type="text/javascript" src="/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script defer type="text/javascript" src="/sweetalert2/sweetalert2.min.js"></script>
@@ -47,7 +48,9 @@
                                 Hühnerklappe:
                                 <span class="ps-1 pe-1" id="flap">
                                     <%= translate(rpiData.flap.status) %>
-                                    <a  href="#" class="ms-1 bi bi-<%= (rpiData.flap.status == 'open') ? 'lock' : 'unlock' %>" id="flapControlBtn"></a>
+                                    <button class="btn btn-sm btn-<%= (rpiData.flap.status=='open' ) ? 'danger' : 'success' %> py-0 px-1 ms-2" id="flapControlBtn">
+                                        <%= (rpiData.flap.status=='open' ) ? 'schließen' : 'öffnen' %>
+                                    </button>
                                 </span>
                                 <a href="#">
                                     <i class="bi" id="flapControlBtn" title=""></i>
@@ -90,11 +93,11 @@
                             <h2>Webcam</h2>
                             <div class="align-self-center pt-2">
                                 <a href="#" class="me-3" id="takeSnapshot"><i class="bi bi-camera"></i></a>
-                                <a href="/webcam" target="_blank"><i class="bi bi-display"></i></a>
+                                <a href="<%= streamURL %>" id="fullscreen"><i class="bi bi-display"></i></a>
                             </div>
                         </div>
                         <div id="webcam">
-                            <img src="/webcam" style="transform: scale(-1, -1)">
+                            <img id="webstream" src="" style="transform: scale(-1, -1)">
                         </div>
                         <div class="alert alert-danger hidden"></div>
                     </div>
